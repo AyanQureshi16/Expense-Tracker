@@ -1,0 +1,572 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Expense Tracker</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: "Poppins", system-ui, -apple-system, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 40px 20px;
+            color: #1e293b;
+        }
+
+        /* Main container */
+        .container {
+            background: #fff;
+            border-radius: 18px;
+            box-shadow: 0 12px 40px rgba(0, 0, 0, 0.2);
+            width: 100%;
+            max-width: 640px;
+            padding: 36px 28px;
+            animation: fadeIn 0.6s ease;
+        }
+
+        /* Fade animation */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Heading */
+        h1 {
+            text-align: center;
+            font-size: 2rem;
+            color: #7c3aed;
+            margin-bottom: 24px;
+            letter-spacing: -0.5px;
+        }
+
+        h1 small {
+            font-size: 0.9rem;
+            color: #666;
+        }
+
+        /* Balance section */
+        .balance-section {
+            text-align: center;
+            margin-bottom: 28px;
+        }
+
+        .balance-label {
+            font-weight: 600;
+            font-size: 1.1rem;
+            color: #475569;
+            margin-bottom: 8px;
+        }
+
+        .balance-amount {
+            font-size: 2.6rem;
+            font-weight: 700;
+            color: #7c3aed;
+        }
+
+        /* Summary cards */
+        .summary-cards {
+            display: flex;
+            gap: 16px;
+            margin-bottom: 30px;
+            flex-wrap: wrap;
+        }
+
+        .summary-card {
+            flex: 1 1 48%;
+            border-radius: 12px;
+            padding: 20px;
+            text-align: center;
+            transition: transform 0.2s ease, box-shadow 0.2s ease;
+        }
+
+        .summary-card:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 6px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .income-card {
+            background: #f0fdf4;
+        }
+
+        .expense-card {
+            background: #fef2f2;
+        }
+
+        .summary-card h3 {
+            color: #64748b;
+            font-size: 1rem;
+            margin-bottom: 10px;
+        }
+
+        .income-amount {
+            color: #16a34a;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        .expense-amount {
+            color: #dc2626;
+            font-size: 1.4rem;
+            font-weight: 700;
+        }
+
+        /* Form section */
+        .form-section {
+            background: #f9fafb;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 32px;
+        }
+
+        .form-section h3 {
+            font-size: 1.2rem;
+            margin-bottom: 20px;
+            color: #1e293b;
+        }
+
+        .input-group {
+            margin-bottom: 18px;
+        }
+
+        label {
+            display: block;
+            font-weight: 600;
+            color: #334155;
+            font-size: 0.9rem;
+            margin-bottom: 6px;
+        }
+
+        input {
+            width: 100%;
+            padding: 12px;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            font-size: 0.95rem;
+            transition: all 0.2s ease;
+        }
+
+        input:focus {
+            outline: none;
+            border-color: #7c3aed;
+            box-shadow: 0 0 0 3px rgba(124, 58, 237, 0.15);
+        }
+
+        .form-note {
+            font-size: 0.8rem;
+            color: #64748b;
+            font-style: italic;
+            margin-top: 4px;
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            background: linear-gradient(90deg, #7c3aed, #6d28d9);
+            color: white;
+            border: none;
+            border-radius: 8px;
+            padding: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.15s ease, box-shadow 0.15s ease;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 18px rgba(124, 58, 237, 0.25);
+        }
+
+        .btn-delete {
+            background: #ef4444;
+            border: none;
+            color: white;
+            padding: 6px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s ease;
+        }
+
+        .btn-delete:hover {
+            background: #dc2626;
+        }
+
+        /* Transaction section */
+        .transaction-section h3 {
+            color: #7c3aed;
+            font-size: 1.2rem;
+            margin-bottom: 14px;
+        }
+
+        .transaction-table {
+            width: 100%;
+            border-collapse: collapse;
+            border-radius: 10px;
+            overflow: hidden;
+        }
+
+        .transaction-table th,
+        .transaction-table td {
+            padding: 14px 12px;
+            text-align: left;
+        }
+
+        .transaction-table th {
+            background: #f1f5f9;
+            color: #334155;
+            font-size: 0.9rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+
+        .transaction-table tr:nth-child(even) td {
+            background: #f9fafb;
+        }
+
+        .amount-positive {
+            color: #16a34a;
+            font-weight: 600;
+        }
+
+        .amount-negative {
+            color: #dc2626;
+            font-weight: 600;
+        }
+
+        .no-transactions {
+            text-align: center;
+            padding: 30px;
+            color: #94a3b8;
+            font-style: italic;
+        }
+
+        /* Logout button area */
+        .logout {
+            text-align: right;
+            margin-top: 16px;
+        }
+
+        .logout button {
+            background: #ef4444;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: background 0.2s ease;
+        }
+
+        .logout button:hover {
+            background: #dc2626;
+        }
+
+        /* Responsive tweaks */
+        @media (max-width: 600px) {
+            .summary-cards {
+                flex-direction: column;
+            }
+
+            .summary-card {
+                flex: 1 1 100%;
+            }
+
+            h1 {
+                font-size: 1.6rem;
+            }
+
+            .container {
+                padding: 24px 18px;
+            }
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h1>Expense Tracker</h1>
+        <div class="container">
+
+            <div class="balance-section">
+                <div class="balance-label">Your Balance</div>
+                <div class="balance-amount" id="balance">$0.00</div>
+            </div>
+
+            <div class="summary-cards">
+                <div class="summary-card income-card">
+                    <h3>Income</h3>
+                    <div class="income-amount" id="totalIncome">$0.00</div>
+                </div>
+                <div class="summary-card expense-card">
+                    <h3>Expenses</h3>
+                    <div class="expense-amount" id="totalExpenses">$0.00</div>
+                </div>
+            </div>
+
+            <div class="form-section" id="transactionForm">
+                <h3>Add Transaction</h3>
+                <form onSubmit="return addTransaction();">
+                    <div class="input-group">
+                        <label>Description</label>
+                        <input type="text" id="description" placeholder="Enter description" required>
+                    </div>
+
+                    <div class="input-group">
+                        <label>Amount (negative - expense, positive - income)</label>
+                        <input type="number" id="amount" step="0.01" placeholder="Enter amount" required>
+                        <p class="form-note">Use negative (-) for expenses, positive for income</p>
+                    </div>
+
+                    <button type="submit" class="btn">Add Transaction</button>
+                </form>
+            </div>
+
+            <div class="transaction-section">
+                <h3>Transaction History</h3>
+                <table class="transaction-table">
+                    <thead>
+                        <tr>
+                            <th>Date</th>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Action</th>
+                        </tr>
+                    </thead>
+                    <tbody id="transactionTableBody">
+                        <tr>
+                            <td colspan="4" class="no-transactions">No transactions yet. Add your first transaction
+                                above!
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        <!-- Add logout button here -->
+        <div style="text-align: right; margin-bottom: 20px;">
+            <button onclick="logout()" style="width: auto; padding: 10px 20px; background: #ef4444;">Logout</button>
+        </div>
+
+        <!-- Rest of your expense tracker code... -->
+
+        <script>
+            // ============ CHECK LOGIN STATUS ============
+            var isLoggedIn = localStorage.getItem('isLoggedIn');
+
+            if (isLoggedIn !== 'true') {
+                alert('Please login first!');
+                location.href = "./login.html";
+            }
+
+            // Display user email
+            var email = localStorage.getItem("userEmail");
+            if (email) {
+                document.querySelector('h1').innerHTML = 'Expense Tracker<br><small style="font-size: 14px; color: #666;">' + email + '</small>';
+            }
+
+            // ============ LOGOUT FUNCTION ============
+            function logout() {
+                saveTransactions(); // Save before logout
+                localStorage.removeItem('isLoggedIn');
+                localStorage.removeItem('userEmail');
+                alert('Logged out successfully!');
+                location.href = "./login.html";
+            }
+
+            // ============ EXPENSE TRACKER CODE ============
+            var transactionDates = [];
+            var transactionDescriptions = [];
+            var transactionAmounts = [];
+
+            // Load transactions on page load
+            loadTransactions();
+
+            function loadTransactions() {
+                var userEmail = localStorage.getItem('userEmail');
+                var allUsers = JSON.parse(localStorage.getItem('users'));
+
+                if (allUsers) {
+                    for (var i = 0; i < allUsers.length; i++) {
+                        if (allUsers[i].email === userEmail) {
+                            if (allUsers[i].transactions) {
+                                var trans = allUsers[i].transactions;
+                                for (var j = 0; j < trans.length; j++) {
+                                    transactionDates.push(trans[j].date);
+                                    transactionDescriptions.push(trans[j].description);
+                                    transactionAmounts.push(trans[j].amount);
+                                }
+                            }
+                            break;
+                        }
+                    }
+                }
+                updateDisplay();
+            }
+
+            function saveTransactions() {
+                var userEmail = localStorage.getItem('userEmail');
+                var allUsers = JSON.parse(localStorage.getItem('users'));
+
+                for (var i = 0; i < allUsers.length; i++) {
+                    if (allUsers[i].email === userEmail) {
+                        var transactions = [];
+                        for (var j = 0; j < transactionDates.length; j++) {
+                            transactions.push({
+                                date: transactionDates[j],
+                                description: transactionDescriptions[j],
+                                amount: transactionAmounts[j]
+                            });
+                        }
+                        allUsers[i].transactions = transactions;
+                        break;
+                    }
+                }
+                localStorage.setItem('users', JSON.stringify(allUsers));
+            }
+
+            function addTransaction() {
+                var description = document.getElementById('description').value;
+                var amount = document.getElementById('amount').value;
+
+                var now = new Date();
+                var year = now.getFullYear();
+                var month = now.getMonth() + 1;
+                var day = now.getDate();
+
+                if (month < 10) {
+                    month = '0' + month;
+                }
+                if (day < 10) {
+                    day = '0' + day;
+                }
+                var dateStr = year + '-' + month + '-' + day;
+
+                transactionDates.push(dateStr);
+                transactionDescriptions.push(description);
+                transactionAmounts.push(amount);
+
+                saveTransactions(); // Save after adding
+
+                document.getElementById('description').value = '';
+                document.getElementById('amount').value = '';
+                document.getElementById('transactionForm').style.display = 'none';
+
+                updateDisplay();
+                return false;
+            }
+
+            function deleteTransaction(index) {
+                var newDates = [];
+                var newDescriptions = [];
+                var newAmounts = [];
+
+                for (var i = 0; i < transactionDates.length; i++) {
+                    if (i !== index) {
+                        newDates.push(transactionDates[i]);
+                        newDescriptions.push(transactionDescriptions[i]);
+                        newAmounts.push(transactionAmounts[i]);
+                    }
+                }
+
+                transactionDates = newDates;
+                transactionDescriptions = newDescriptions;
+                transactionAmounts = newAmounts;
+
+                saveTransactions(); // Save after deleting
+                updateDisplay();
+            }
+
+            function toggleForm() {
+                var form = document.getElementById('transactionForm');
+                if (form.style.display === 'none') {
+                    form.style.display = 'block';
+                } else {
+                    form.style.display = 'none';
+                }
+            }
+
+            function updateDisplay() {
+                var totalIncome = 0;
+                var totalExpense = 0;
+
+                for (var i = 0; i < transactionAmounts.length; i++) {
+                    var amount = parseFloat(transactionAmounts[i]);
+
+                    if (amount > 0) {
+                        totalIncome = totalIncome + amount;
+                    } else {
+                        totalExpense = totalExpense + amount;
+                    }
+                }
+
+                var balance = totalIncome + totalExpense;
+
+                document.getElementById('balance').innerHTML = '$' + balance.toFixed(2);
+                document.getElementById('totalIncome').innerHTML = '$' + totalIncome.toFixed(2);
+
+                var expenseDisplay = totalExpense;
+                if (expenseDisplay < 0) {
+                    expenseDisplay = expenseDisplay * -1;
+                }
+                document.getElementById('totalExpenses').innerHTML = '$' + expenseDisplay.toFixed(2);
+
+                var tableHTML = '';
+
+                if (transactionDates.length === 0) {
+                    tableHTML = '<tr><td colspan="4" class="no-transactions">No transactions yet. Add your first transaction above!</td></tr>';
+                } else {
+                    for (var i = 0; i < transactionDates.length; i++) {
+                        var date = transactionDates[i];
+                        var desc = transactionDescriptions[i];
+                        var amt = parseFloat(transactionAmounts[i]);
+
+                        var amountClass = '';
+                        var amountText = '';
+
+                        if (amt > 0) {
+                            amountClass = 'amount-positive';
+                            amountText = '$' + amt.toFixed(2);
+                        } else {
+                            amountClass = 'amount-negative';
+                            amountText = '$' + amt.toFixed(2);
+                        }
+
+                        tableHTML = tableHTML + '<tr>';
+                        tableHTML = tableHTML + '<td>' + date + '</td>';
+                        tableHTML = tableHTML + '<td>' + desc + '</td>';
+                        tableHTML = tableHTML + '<td class="' + amountClass + '">' + amountText + '</td>';
+                        tableHTML = tableHTML + '<td><button class="btn-delete" onclick="deleteTransaction(' + i + ')">X</button></td>';
+                        tableHTML = tableHTML + '</tr>';
+                    }
+
+                    tableHTML = tableHTML + '<tr><td colspan="4" style="text-align: center; padding: 20px;">';
+                    tableHTML = tableHTML + '<button class="btn" onclick="toggleForm()">Add New Transaction</button>';
+                    tableHTML = tableHTML + '</td></tr>';
+                }
+
+                document.getElementById('transactionTableBody').innerHTML = tableHTML;
+            }
+        </script>
+</body>
+
+</html>
